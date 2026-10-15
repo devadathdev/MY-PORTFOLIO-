@@ -26,4 +26,27 @@
     }), { threshold: 0.08 });
     items.forEach(item => observer.observe(item));
   }
+  // Subtle pointer-driven 3D parallax for the intelligence-engine panel.
+  const hud = document.querySelector('.hud-3d');
+  if (hud && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    hud.addEventListener('pointermove', event => {
+      const rect = hud.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      hud.style.transform = 'perspective(1000px) rotateX(' + ((.5-y)*2.3).toFixed(2) + 'deg) rotateY(' + ((x-.5)*3.2).toFixed(2) + 'deg)';
+    });
+    hud.addEventListener('pointerleave', () => { hud.style.transform = ''; });
+  }
+  // Gentle depth response on project cards for mouse/trackpad users.
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('pointermove', event => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - .5;
+        const y = (event.clientY - rect.top) / rect.height - .5;
+        card.style.transform = 'translateY(-3px) rotateX(' + (-y*1.6).toFixed(2) + 'deg) rotateY(' + (x*1.8).toFixed(2) + 'deg)';
+      });
+      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+    });
+  }
 })();
